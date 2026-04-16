@@ -1,0 +1,132 @@
+[1m[0;36m╔══════════════════════════════════════════════════════╗[0m
+[1m[0;36m║  Nyquest Semantic Compression Stage — Benchmarks     ║[0m
+[1m[0;36m╚══════════════════════════════════════════════════════╝[0m
+
+Date: Tue Mar  3 04:09:56 PM UTC 2026
+Host: test-server
+
+[1m═══ PHASE 0: Prerequisites ═══[0m
+
+Ollama installed: bench_semantic.sh: line 39: NC: command not found
+[0;32mYES (ollama version is 0.17.5)
+Ollama service: [0;32mactive[0m
+Model qwen2.5:1.5b-instruct: [0;32mavailable[0m
+qwen2.5:1.5b-instruct    65ec06548149    986 MB    29 minutes ago    
+
+GPU Status:
+NVIDIA GeForce GTX 1080, 1509 MiB, 8192 MiB, 34
+
+RAM: 29Gi/125Gi used
+
+[1m═══ PHASE 1: Model Warm-Up & Basic Response ═══[0m
+
+Warming up model (first call loads into VRAM)...
+  Warm-up time: 0.223884s
+OK
+  [0;32mModel responding[0m
+
+Post-warmup GPU VRAM:
+1509 MiB, 8192 MiB
+
+[1m═══ PHASE 2: Latency Benchmarks ═══[0m
+
+[0;36mTest: System Prompt Condensation — Small (500 chars)[0m
+  Input length: 483 chars
+  Avg prompt tokens: 146
+  Avg completion tokens: 37
+  Sample output: Understood. I will provide helpful, accurate, and researched responses while maintaining a professional and friendly tone. I will avoid misleading or incorrect information and always be ready to admit uncertainty.
+
+[0;36mTest: System Prompt Condensation — Large (1500 chars)[0m
+  Input length: 1500 chars
+  Avg prompt tokens: 326
+  Avg completion tokens: 64
+  Sample output: Understand the context, provide clean, well-documented, efficient, and explainable code, consider edge cases, and handle errors. Format code blocks properly, review code for bugs, performance, and style, and suggest improvements. Be familiar with frameworks and libraries, consider architecture for s
+
+[0;36mTest: History Condensation — 10 messages (2K chars)[0m
+  Input length: 2002 chars
+  Avg prompt tokens: 529
+  Avg completion tokens: 144
+  Sample output: [0] user: Set up an EKS cluster on AWS using eksctl.
+
+[1] assistant: Install eksctl and configure AWS credentials. Create the cluster with eksctl create cluster.
+
+[2] user: Services can't talk to each other. Check ClusterIP, pods in default namespace, and security groups.
+
+[3] assistant: Services ar
+
+[0;36mTest: Redundancy Scoring — 6 messages with duplicates[0m
+  Input length: 566 chars
+  Avg prompt tokens: 227
+  Avg completion tokens: 242
+  Sample output: ```json
+[
+    {
+        "msg_index": 0,
+        "span_start": 0,
+        "span_end": 14,
+        "duplicate_of": 3,
+        "confidence": 0.85
+    },
+    {
+        "msg_index": 1,
+        "span_start": 0,
+        "span_end": 14,
+        "duplicate_of": 3,
+        "confidence": 0.85
+    },
+    {
+    
+
+[1m═══ PHASE 3: Compression Quality Tests ═══[0m
+
+[0;36mQuality Test: Claude-style system prompt compression[0m
+  Input:  765 chars / 121 words / ~192 prompt tokens
+  Output: 337 chars / 45 words / ~64 completion tokens
+  Char savings: 55.9%
+  ---
+  OUTPUT:
+Claude, AI assistant by Anthropic, should always be helpful, harmless, honest, respectful, and honest. Answer questions step by step, provide accurate information, respect privacy, avoid harmful, illegal, or unethical activities, and handle code with best practices, including error handling. Explain complex topics simply when possible.
+  ---
+
+[0;36mQuality Test: OpenClaw agent history compression[0m
+  Input:  1342 chars / 207 words / ~404 prompt tokens
+  Output: 336 chars / 55 words / ~64 completion tokens
+  Char savings: 75.0%
+  ---
+  OUTPUT:
+The Python script encountered a KeyError on line 42 due to accessing a missing dictionary key. The assistant suggested using the .get() method with a default value to safely retrieve the required keys. The script was updated to use this approach, and a helper function was created to simplify the repeated access to nested dictionaries.
+  ---
+
+[1m═══ PHASE 4: Live Nyquest Proxy Test ═══[0m
+
+Nyquest proxy status: [0;32mrunning[0m
+
+Sending test request through Nyquest proxy...
+(This tests the full pipeline: normalize -> compress -> forward)
+
+  HTTP Code: 401
+  Total time: 0.292990s
+
+Nyquest compression stats:
+  Could not parse stats
+
+[1m═══ PHASE 5: Throughput — Sequential Requests ═══[0m
+
+Running 10 sequential compression requests...
+..........
+  10 requests in 3383ms
+  Average: 338ms per request
+  Throughput: 2.96 req/s
+
+[1m[0;36m╔══════════════════════════════════════════════════════╗[0m
+[1m[0;36m║  Benchmark Complete                                  ║[0m
+[1m[0;36m╚══════════════════════════════════════════════════════╝[0m
+
+Results saved to: SEMANTIC_BENCHMARK_RESULTS.txt
+
+Next steps:
+  1. Wire semantic.rs into lib.rs and engine.rs
+  2. Add SemanticConfig fields to config.rs
+  3. cargo build --release
+  4. Add semantic_enabled: true to nyquest.yaml
+  5. sudo systemctl restart nyquest

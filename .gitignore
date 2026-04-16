@@ -1,0 +1,25 @@
+/target
+target/
+node_modules/
+logs/
+*.bak
+*.bak.*
+package-lock.json
+
+# Secrets & config
+.env
+*.env
+nyquest-prod.yaml
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Runtime / local configs
+nyquest.yaml.local
+*.jsonl

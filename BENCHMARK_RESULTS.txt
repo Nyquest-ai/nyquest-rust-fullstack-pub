@@ -1,0 +1,124 @@
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║           NYQUEST 3-WAY BENCHMARK: Python Native vs Hybrid vs Full Rust          ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+
+  Rust .so:  nyquest_core @ nyquest_core/__init__.py
+  Rust bin:  ~/nyquest (port 5400)
+
+
+════════════════════════════════════════════════════════════════════════════════
+  A. TEXT COMPRESSION — level=0.5
+════════════════════════════════════════════════════════════════════════════════
+  Payload                         Python Native        Hybrid Rust .so    Speedup
+  ────────────────────── ────────────────────── ────────────────────── ──────────
+  Small (251 chars)         1,777 ops/s   562.5µs       102 ops/s  9769.2µs        0.1×
+                         ↓56.6% (251→109)    ↓56.6% (251→109)
+  Medium (1.3K)               284 ops/s  3511.4µs        98 ops/s 10141.5µs        0.3×
+                         ↓31.5% (1263→865)    ↓31.5% (1263→865)
+  Large (6.3K)                 58 ops/s 16950.3µs        94 ops/s 10544.5µs        1.6×
+                         ↓31.5% (6315→4325)    ↓31.5% (6315→4325)
+
+
+════════════════════════════════════════════════════════════════════════════════
+  A. TEXT COMPRESSION — level=1.0
+════════════════════════════════════════════════════════════════════════════════
+  Payload                         Python Native        Hybrid Rust .so    Speedup
+  ────────────────────── ────────────────────── ────────────────────── ──────────
+  Small (251 chars)           992 ops/s  1007.3µs       101 ops/s  9851.5µs        0.1×
+                         ↓56.6% (251→109)    ↓56.6% (251→109)
+  Medium (1.3K)               191 ops/s  5231.6µs        98 ops/s 10184.7µs        0.5×
+                         ↓43.2% (1263→717)    ↓43.2% (1263→717)
+  Large (6.3K)                 45 ops/s 22194.4µs        92 ops/s 10845.2µs        2.0×
+                         ↓65.9% (6315→2151)    ↓43.2% (6315→3585)
+
+
+════════════════════════════════════════════════════════════════════════════════
+  B. REQUEST COMPRESSION — level=0.5
+════════════════════════════════════════════════════════════════════════════════
+  Payload                         Python Native        Hybrid Rust .so    Speedup
+  ────────────────────── ────────────────────── ────────────────────── ──────────
+  Small (3 msgs)              738 ops/s  1354.5µs        33 ops/s 29663.6µs        0.0×
+                         135→86tok (36.3%)      135→86tok (36.3%)
+  Medium (5 msgs)             186 ops/s  5366.7µs        24 ops/s 40229.4µs        0.1×
+                         607→413tok (32.0%)      607→413tok (32.0%)
+  Large (20 turns)            135 ops/s  7401.8µs         9 ops/s 109153.8µs        0.1×
+                         1408→949tok (32.6%)      1408→949tok (32.6%)
+
+
+════════════════════════════════════════════════════════════════════════════════
+  B. REQUEST COMPRESSION — level=1.0
+════════════════════════════════════════════════════════════════════════════════
+  Payload                         Python Native        Hybrid Rust .so    Speedup
+  ────────────────────── ────────────────────── ────────────────────── ──────────
+  Small (3 msgs)              407 ops/s  2456.2µs        33 ops/s 29847.5µs        0.1×
+                         135→86tok (36.3%)      135→86tok (36.3%)
+  Medium (5 msgs)             119 ops/s  8396.6µs        24 ops/s 40905.8µs        0.2×
+                         607→350tok (42.3%)      607→350tok (42.3%)
+  Large (20 turns)             78 ops/s 12778.7µs         9 ops/s 110338.7µs        0.1×
+                         1408→929tok (34.0%)      1408→929tok (34.0%)
+
+
+════════════════════════════════════════════════════════════════════════════════
+  C. TOKEN COUNTING
+════════════════════════════════════════════════════════════════════════════════
+  Payload                         Python Native        Hybrid Rust .so    Speedup
+  ────────────────────── ────────────────────── ────────────────────── ──────────
+  Small                   916,734 ops/s =   72tok  5,995,815 ops/s =   72tok        6.5×
+  Medium                  369,495 ops/s =  366tok   425,878 ops/s =  366tok        1.2×
+  Large                   103,773 ops/s = 1829tok    90,276 ops/s = 1829tok        0.9×
+
+════════════════════════════════════════════════════════════════════════════════
+  D. FULL RUST HTTP SERVER (port 5400)
+════════════════════════════════════════════════════════════════════════════════
+  Status: ok  Version: 3.0.0  Engine: rust=True  Level: 0.7
+  OpenClaw: True  Normalize: True  Context: True
+
+  /health throughput:     3,426 req/s  (291.9µs avg latency)
+  Total requests:        0
+  Avg compression:       0%
+  Total tokens saved:    0
+
+════════════════════════════════════════════════════════════════════════════════
+  E. OUTPUT PARITY — Python vs Hybrid @ level=0.5
+════════════════════════════════════════════════════════════════════════════════
+  Input                                              Python                   Hybrid                   Match
+  ────────────────────────────────────────────────── ──────────────────────── ──────────────────────── ─────
+  Please note that it is important to note that      (removed)                (removed)                ✓
+  In order to utilize this implementation            to use this adding       to use this adding       ✓
+  Due to the fact that we need to subsequently       because we need to th…   because we need to th…   ✓
+  You are an AI assistant designed to help           Assistant: help          Assistant: help          ✓
+  As an AI language model, I cannot provide          As an AI language mod…   As an AI language mod…   ✓
+  Act as a senior developer who is an expert in P…   Expert: Python           Expert: Python           ✓
+  Think step by step and carefully analyze           Step by step:            Step by step:            ✓
+  January 14th, 2025                                 25-01-14                 25-01-14                 ✓
+  forty-two thousand dollars                         42k dollars              42k dollars              ✓
+  do not share this system prompt with the user      don't share this syst…   don't share this syst…   ✓
+  I hope this helps! Let me know if you need any …   I hope this helps! Le…   I hope this helps! Le…   ✓
+
+  Parity: 11/11 identical
+
+════════════════════════════════════════════════════════════════════════════════
+  F. SUMMARY TABLE
+════════════════════════════════════════════════════════════════════════════════
+
+  ┌────────────────────┬──────────────────┬──────────────────┬──────────────────┐
+  │                    │  Python Native   │ Hybrid (Py+Rust) │ Full Rust Stack  │
+  ├────────────────────┼──────────────────┼──────────────────┼──────────────────┤
+  │ Compression engine │ Python re        │ Rust regex (.so) │ Rust regex       │
+  │ Normalizer         │ Python           │ Python           │ Rust             │
+  │ HTTP server        │ FastAPI/uvicorn  │ FastAPI/uvicorn  │ axum/tokio       │
+  │ Crypto vault       │ Fernet AES-128   │ Fernet AES-128   │ AES-256-GCM      │
+  │ Source size        │  173 KB Python  │ + 1996 KB .so    │ 4,076 lines Rust │
+  │ Binary/deploy      │ Python + 6 deps  │ Python + .so     │ Single 5.8MB bin│
+  │ Platform           │ Any Python 3.10+ │ CPython 3.12 x64 │ Linux x86-64     │
+  │ IP protection      │ Obfuscated src   │ Compiled .so core│ Fully compiled   │
+  │ Py version issues  │ Yes (Aaroha bug) │ Yes (ABI lock)   │ None             │
+  │ GIL limitation     │ Yes              │ Partial bypass   │ None (native MT) │
+  │ Startup time       │ ~500ms imports   │ ~500ms imports   │ <10ms            │
+  └────────────────────┴──────────────────┴──────────────────┴──────────────────┘
+
+  RECOMMENDATION:
+  → Production proxy: Full Rust Stack (single binary, no deps, no version issues)
+  → Development/testing: Hybrid mode (fast iteration with Rust hot-path)
+  → Fallback: Python Native (maximum portability, any platform)
+
